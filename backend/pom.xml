@@ -23,6 +23,7 @@
         <module>yunwu-evaluation</module>
         <module>yunwu-report</module>
         <module>yunwu-vocabulary</module>
+        <module>yunwu-incentive</module>
     </modules>
 
     <properties>
