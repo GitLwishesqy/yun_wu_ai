@@ -1,31 +1,59 @@
 """
-LLM 服务 — 统一抽象，支持 OpenAI / DeepSeek / Qwen 等多模型
+LLM 服务 — 单例模式 + tenacity 重试
 """
 import config
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
+from tenacity import (
+    retry, stop_after_attempt, wait_exponential,
+    retry_if_exception_type, before_sleep_log
+)
 from typing import List, Optional
-import logging
+from utils.logger import logger
 
-logger = logging.getLogger(__name__)
+# ==================== LLM 单例 (性能优化) ====================
+
+_llm_instance: Optional[ChatOpenAI] = None
+_llm_instance_lock = __import__('threading').Lock()
 
 
-def create_llm(
+def get_llm(
     temperature: Optional[float] = None,
-    max_tokens: Optional[int] = None
+    max_tokens: Optional[int] = None,
+    force_new: bool = False
 ) -> ChatOpenAI:
     """
-    创建 LLM 实例 — 通过 base_url 支持多模型
+    获取 LLM 单例 — 避免每次请求重复创建实例
     """
+    global _llm_instance
+
+    if _llm_instance is not None and not force_new:
+        # 如果需要不同的 temperature，克隆一份 (但共享底层连接池)
+        if temperature is not None and temperature != config.LLM_TEMPERATURE:
+            return _build_llm(temperature, max_tokens)
+        if max_tokens is not None and max_tokens != config.LLM_MAX_TOKENS:
+            return _build_llm(temperature, max_tokens)
+        return _llm_instance
+
+    with _llm_instance_lock:
+        if _llm_instance is None or force_new:
+            _llm_instance = _build_llm(
+                temperature or config.LLM_TEMPERATURE,
+                max_tokens or config.LLM_MAX_TOKENS
+            )
+    return _llm_instance
+
+
+def _build_llm(temperature: float, max_tokens: int) -> ChatOpenAI:
     kwargs = {
         "model": config.LLM_MODEL,
         "api_key": config.LLM_API_KEY,
-        "temperature": temperature or config.LLM_TEMPERATURE,
-        "max_tokens": max_tokens or config.LLM_MAX_TOKENS,
+        "temperature": temperature,
+        "max_tokens": max_tokens,
         "timeout": config.LLM_TIMEOUT,
+        "request_timeout": config.LLM_TIMEOUT,
     }
 
-    # 国内模型通过自定义 base_url 接入
     if config.LLM_PROVIDER == "deepseek":
         kwargs["base_url"] = config.LLM_BASE_URL or "https://api.deepseek.com/v1"
     elif config.LLM_PROVIDER == "qwen":
@@ -33,30 +61,56 @@ def create_llm(
     elif config.LLM_BASE_URL:
         kwargs["base_url"] = config.LLM_BASE_URL
 
-    logger.info(f"创建 LLM: provider={config.LLM_PROVIDER}, model={config.LLM_MODEL}")
+    logger.info("llm_instance_created",
+                extra={"provider": config.LLM_PROVIDER, "model": config.LLM_MODEL})
     return ChatOpenAI(**kwargs)
 
+
+# ==================== 带重试的调用 (可靠性) ====================
+
+@retry(
+    stop=stop_after_attempt(config.LLM_RETRY_MAX_ATTEMPTS),
+    wait=wait_exponential(
+        multiplier=config.LLM_RETRY_BACKOFF,
+        min=config.LLM_RETRY_MIN_WAIT,
+        max=config.LLM_RETRY_MAX_WAIT,
+    ),
+    retry=retry_if_exception_type((
+        ConnectionError, TimeoutError,
+        __import__('requests').exceptions.Timeout,
+        __import__('requests').exceptions.ConnectionError,
+        __import__('urllib3.exceptions').TimeoutError,
+        __import__('urllib3.exceptions').ProtocolError,
+    )),
+    before_sleep=before_sleep_log(logger, __import__('logging').WARNING),
+    reraise=True,
+)
+def invoke_llm_with_retry(llm: ChatOpenAI, messages: list):
+    """带指数退避重试的 LLM 调用"""
+    logger.debug("llm_invoke", extra={"message_count": len(messages)})
+    return llm.invoke(messages)
+
+
+# ==================== 消息构建 ====================
 
 def build_messages(
     system_prompt: str,
     conversation_history: List[dict],
     latest_user_message: str
 ) -> list:
-    """构建 LLM 消息列表"""
     messages = [SystemMessage(content=system_prompt)]
-
-    for msg in conversation_history:
-        if msg.get("role") == "USER":
-            messages.append(HumanMessage(content=msg.get("content", "")))
-        elif msg.get("role") == "AI":
-            messages.append(AIMessage(content=msg.get("content", "")))
-
+    for msg in (conversation_history or []):
+        role = msg.get("role", "")
+        content = msg.get("content", "")
+        if role == "USER":
+            messages.append(HumanMessage(content=content))
+        elif role == "AI":
+            messages.append(AIMessage(content=content))
     messages.append(HumanMessage(content=latest_user_message))
     return messages
 
 
 def extract_token_usage(response) -> dict:
-    """从 LangChain 响应中提取 Token 用量"""
     try:
         usage = response.response_metadata.get("token_usage", {})
         return {

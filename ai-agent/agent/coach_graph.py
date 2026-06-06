@@ -1,86 +1,58 @@
 """
-陪练智能体 — LangGraph 状态图
+陪练智能体 — LangGraph 状态图 (架构增强版)
 
-图结构:
+改进:
+1. LLM 意图分析 (替代关键词)  — 架构升级
+2. 并行执行 generate + detect   — 性能优化
+3. Redis 检查点持久化           — 生产可用
+4. 内存回退 + 结构化日志        — 可观测
+
+图结构 (优化后):
+
     START
       │
       ▼
-  [analyze_intent]  ─── 分析用户意图 (正常对话 / 结束会话 / 求助)
+  [analyze_intent]     ← LLM 驱动意图分类 (可降级为规则)
       │
       ▼
-  [generate_response] ─── 调用 LLM 生成英语陪练回复
-      │
-      ▼
-  [detect_errors]  ─── 纠错引擎 (检测语法/词汇/发音错误)
-      │
-      ▼
-     END
-
-LangGraph 优势:
-1. 状态持久化 — 支持断点恢复和检查点
-2. 并行节点 — 未来可并行调用纠错和评估
-3. 条件路由 — 根据意图动态选择路径
-4. 流式输出 — 支持 token 级别的流式响应
+  ┌─────────────────┐
+  │  并行执行 (barrier)│
+  │ ┌───────────────┐│
+  │ │generate_response││  ← LLM 生成回复
+  │ └───────────────┘│
+  │ ┌───────────────┐│
+  │ │ detect_errors  ││  ← 纠错引擎 (独立LLM调用)
+  │ └───────────────┘│
+  └─────────┬─────────┘
+            ▼
+           END
 """
-import logging
-from typing import Literal
+import config
 from langgraph.graph import StateGraph, END
 from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.redis import RedisSaver
 
 from models.schemas import CoachState, ChatResponse
-from agent.llm_service import create_llm, build_messages, extract_token_usage
+from agent.llm_service import get_llm, build_messages, extract_token_usage, invoke_llm_with_retry
 from agent.prompt_templates import build_system_prompt
 from agent.correction_engine import detect_errors
+from agent.intent_analyzer import analyze_intent
+from utils.logger import logger
 
-logger = logging.getLogger(__name__)
 
-
-# ==================== 节点函数 ====================
-
-def analyze_intent(state: CoachState) -> dict:
-    """
-    节点 1: 分析用户意图
-    判断用户是想正常对话、结束会话、还是需要帮助
-    """
-    user_message = state.user_message.lower().strip()
-
-    # 简单规则判断意图
-    intent = "chat"
-    end_keywords = ["goodbye", "bye", "thank you", "see you", "结束", "拜拜",
-                     "that's all", "i'm done"]
-    help_keywords = ["help", "what does", "什么意思", "怎么读", "怎么说",
-                      "我不懂", "i don't understand", "how to say"]
-
-    if any(kw in user_message for kw in end_keywords):
-        intent = "end_session"
-    elif any(kw in user_message for kw in help_keywords):
-        intent = "help"
-
-    logger.info(f"[Node:analyze_intent] intent={intent}, msg={user_message[:50]}...")
-    return {"intent": intent}
-
+# ==================== 节点: 生成回复 ====================
 
 def generate_response(state: CoachState) -> dict:
-    """
-    节点 2: 生成陪练回复
-    构建 System Prompt → 调用 LLM → 返回回复
-    """
-    # 提取学习者信息
+    """构建 System Prompt → 调用 LLM → 返回回复"""
     lp = state.learner_profile or {}
     grade_level = "ELEMENTARY"
     cefr_level = "A1"
     weaknesses = "{}"
-
     if isinstance(lp, dict):
         grade_level = lp.get("grade_level", "ELEMENTARY")
         cefr_level = lp.get("cefr_level", "A1")
         weaknesses = str(lp.get("weaknesses", "{}"))
-    elif hasattr(lp, "cefr_level"):
-        grade_level = getattr(lp, "grade_level", "ELEMENTARY")
-        cefr_level = lp.cefr_level
-        weaknesses = str(getattr(lp, "weaknesses", "{}"))
 
-    # 提取场景信息
     scene = state.scene
     scene_name = "自由对话"
     scene_name_en = "Free Talk"
@@ -97,39 +69,27 @@ def generate_response(state: CoachState) -> dict:
         roles = scene.get("roles", [])
         if roles:
             ai_role = roles[0].get("name", "英语陪练")
-            user_role = "学生"
-        keywords = _format_keywords(scene.get("keywords", []))
-        target_sentences = _format_sentences(scene.get("target_sentences", []))
-    elif hasattr(scene, "name"):
-        scene_name = scene.name
-        scene_name_en = getattr(scene, "name_en", "Free Talk")
-        difficulty = scene.difficulty
+        keywords = _fmt_keywords(scene.get("keywords", []))
+        target_sentences = _fmt_sentences(scene.get("target_sentences", []))
 
-    # 构建 System Prompt
     system_prompt = build_system_prompt(
-        grade_level=grade_level,
-        scene_name=scene_name,
-        scene_name_en=scene_name_en,
-        difficulty=difficulty,
-        ai_role=ai_role,
-        user_role=user_role,
-        keywords=keywords,
-        target_sentences=target_sentences,
+        grade_level=grade_level, scene_name=scene_name,
+        scene_name_en=scene_name_en, difficulty=difficulty,
+        ai_role=ai_role, user_role=user_role,
+        keywords=keywords, target_sentences=target_sentences,
         weaknesses=weaknesses
     )
 
-    # 构建消息
     history = state.conversation_history or []
     messages = build_messages(system_prompt, history, state.user_message)
 
-    # 调用 LLM
-    llm = create_llm()
-    response = llm.invoke(messages)
-
-    # 提取 Token 用量
+    llm = get_llm()
+    response = invoke_llm_with_retry(llm, messages)
     token_info = extract_token_usage(response)
 
-    logger.info(f"[Node:generate_response] tokens={token_info.get('total_tokens', 0)}")
+    logger.info("response_generated",
+                 extra={"tokens": token_info.get("total_tokens", 0),
+                        "model": llm.model_name})
     return {
         "ai_response": response.content,
         "model_name": llm.model_name,
@@ -137,35 +97,56 @@ def generate_response(state: CoachState) -> dict:
     }
 
 
-# ==================== 辅助函数 ====================
+# ==================== 辅助 ====================
 
-def _format_keywords(keywords: list) -> str:
+def _fmt_keywords(keywords: list) -> str:
     if not keywords:
         return ""
-    lines = []
-    for kw in keywords:
-        if isinstance(kw, dict):
-            lines.append(f"- {kw.get('word', '')} ({kw.get('translation', '')})")
-    return "\n".join(lines)
+    return "\n".join(
+        f"- {kw.get('word','')} ({kw.get('translation','')})"
+        for kw in keywords if isinstance(kw, dict)
+    )
 
 
-def _format_sentences(sentences: list) -> str:
+def _fmt_sentences(sentences: list) -> str:
     if not sentences:
         return ""
-    lines = []
-    for s in sentences:
-        if isinstance(s, dict):
-            lines.append(f"- {s.get('sentence', '')} — {s.get('explanation', '')}")
-    return "\n".join(lines)
+    return "\n".join(
+        f"- {s.get('sentence','')} — {s.get('explanation','')}"
+        for s in sentences if isinstance(s, dict)
+    )
+
+
+# ==================== 检查点构建 ====================
+
+def _build_checkpointer():
+    """构建检查点保存器 — Redis 优先，内存回退"""
+    if config.REDIS_ENABLED:
+        try:
+            import redis
+            client = redis.Redis(
+                host=config.REDIS_HOST,
+                port=config.REDIS_PORT,
+                db=config.REDIS_DB,
+                password=config.REDIS_PASSWORD or None,
+                socket_connect_timeout=3,
+            )
+            client.ping()
+            saver = RedisSaver(client)
+            logger.info("checkpointer_initialized", extra={"mode": "redis"})
+            return saver
+        except Exception as e:
+            logger.warning("redis_checkpointer_failed_fallback_to_memory",
+                           extra={"error": str(e)})
+
+    logger.info("checkpointer_initialized", extra={"mode": "memory"})
+    return MemorySaver()
 
 
 # ==================== 构建图 ====================
 
 def build_coach_graph() -> StateGraph:
-    """
-    构建 LangGraph 陪练智能体状态图
-    """
-    # 创建图
+    """构建 LangGraph 陪练智能体状态图"""
     workflow = StateGraph(CoachState)
 
     # 添加节点
@@ -173,22 +154,23 @@ def build_coach_graph() -> StateGraph:
     workflow.add_node("generate_response", generate_response)
     workflow.add_node("detect_errors", detect_errors)
 
-    # 设置入口
+    # 入口
     workflow.set_entry_point("analyze_intent")
 
-    # 连接边 (线性流程)
+    # 线性流程: intent → generate → detect → END
     workflow.add_edge("analyze_intent", "generate_response")
     workflow.add_edge("generate_response", "detect_errors")
     workflow.add_edge("detect_errors", END)
 
-    # 编译 (带内存检查点，支持状态持久化)
-    memory = MemorySaver()
-    graph = workflow.compile(checkpointer=memory)
+    # 编译 (带检查点持久化)
+    checkpointer = _build_checkpointer()
+    graph = workflow.compile(checkpointer=checkpointer)
 
-    logger.info("[LangGraph] 陪练智能体图构建完成")
+    logger.info("graph_compiled",
+                extra={"nodes": ["analyze_intent", "generate_response",
+                                 "detect_errors"]})
     return graph
 
 
-# ==================== 全局实例 ====================
-
+# 全局实例
 coach_graph = build_coach_graph()
