@@ -49,6 +49,16 @@ REDIS_PREFIX = "yunwu:ai-agent:"
 # ==================== 纠错配置 ====================
 CORRECTION_ENABLED = os.getenv("CORRECTION_ENABLED", "true").lower() == "true"
 
+# ==================== pgvector 配置 (向量数据库) ====================
+PGVECTOR_ENABLED = os.getenv("PGVECTOR_ENABLED", "false").lower() == "true"
+PGVECTOR_DATABASE_URL = os.getenv(
+    "PGVECTOR_DATABASE_URL",
+    "postgresql://postgres:postgres@localhost:5432/yunwu_english"
+)
+# text-embedding 模型 (用于 RAG)
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "text-embedding-3-small")
+EMBEDDING_DIMENSIONS = int(os.getenv("EMBEDDING_DIMENSIONS", "1536"))
+
 # ==================== 可观测性配置 ====================
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 LOG_FORMAT = os.getenv("LOG_FORMAT", "json")       # json / text
