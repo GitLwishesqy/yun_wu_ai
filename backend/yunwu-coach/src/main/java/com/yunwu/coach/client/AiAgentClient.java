@@ -1,12 +1,5 @@
 package com.yunwu.coach.client;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -14,6 +7,14 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * AI 智能体 HTTP 客户端 — 调用 Python LangGraph 微服务
@@ -30,7 +31,7 @@ public class AiAgentClient {
 
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
-
+    // TODO:需要修改端口号
     @Value("${yunwu.ai-agent.url:http://localhost:8000}")
     private String agentBaseUrl;
 
