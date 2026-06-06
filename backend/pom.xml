@@ -18,6 +18,7 @@
         <module>yunwu-user</module>
         <module>yunwu-sms</module>
         <module>yunwu-coach</module>
+        <module>yunwu-scene</module>
     </modules>
 
     <properties>
