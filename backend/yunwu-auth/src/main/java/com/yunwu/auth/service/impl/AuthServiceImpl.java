@@ -1,21 +1,27 @@
 package com.yunwu.auth.service.impl;
 
-import cn.hutool.core.util.RandomUtil;
-import com.yunwu.auth.dto.*;
-import com.yunwu.auth.service.AuthService;
-import com.yunwu.auth.util.JwtUtil;
-import com.yunwu.common.constant.Constants;
-import com.yunwu.common.enums.UserStatusEnum;
-import com.yunwu.common.exception.BusinessException;
-import com.yunwu.common.exception.ErrorCode;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import com.yunwu.auth.dto.LoginRequest;
+import com.yunwu.auth.dto.LoginResponse;
+import com.yunwu.auth.dto.RefreshTokenRequest;
+import com.yunwu.auth.dto.SendCodeRequest;
+import com.yunwu.auth.service.AuthService;
+import com.yunwu.auth.util.JwtUtil;
+import com.yunwu.common.constant.Constants;
+import com.yunwu.common.exception.BusinessException;
+import com.yunwu.common.exception.ErrorCode;
+import com.yunwu.common.service.IUserAuthService;
+
+import cn.hutool.core.util.RandomUtil;
 
 /**
  * 鉴权服务实现 — 验证码、登录/注册、Token 管理
@@ -30,14 +36,18 @@ public class AuthServiceImpl implements AuthService {
 
     private final JwtUtil jwtUtil;
     private final RedisTemplate<String, Object> redisTemplate;
+    private final IUserAuthService userAuthService;
 
     /** 是否为开发模式 (开发模式下验证码固定为 123456) */
     @Value("${yunwu.auth.dev-mode:false}")
     private boolean devMode;
 
-    public AuthServiceImpl(JwtUtil jwtUtil, RedisTemplate<String, Object> redisTemplate) {
+    public AuthServiceImpl(JwtUtil jwtUtil,
+                           RedisTemplate<String, Object> redisTemplate,
+                           @Autowired(required = false) IUserAuthService userAuthService) {
         this.jwtUtil = jwtUtil;
         this.redisTemplate = redisTemplate;
+        this.userAuthService = userAuthService;
     }
 
     // ==================== 发送验证码 ====================
@@ -78,18 +88,23 @@ public class AuthServiceImpl implements AuthService {
         // 1. 校验验证码
         validateCode(phone, "LOGIN", code);
 
-        // 2. 查找或创建用户 (TODO: UserService 实现后对接数据库)
-        // 目前使用 Mock 用户数据
-        Long userId = getOrCreateUser(phone, ipAddress);
-        String role = "STUDENT";
-        boolean isNewUser = false; // 从数据库判断
+        // 2. 查找或创建用户
+        IUserAuthService.UserAuthInfo authInfo;
+        if (userAuthService != null) {
+            authInfo = userAuthService.findOrCreateByPhone(phone, ipAddress);
+        } else {
+            // Fallback: 未接入用户模块时的 Mock 数据
+            authInfo = new IUserAuthService.UserAuthInfo(
+                    (long) Math.abs(phone.hashCode()), "STUDENT", "ACTIVE", false);
+        }
 
         // 3. 检查用户状态
-        // TODO: 查询数据库获取真实状态
-        String status = "ACTIVE";
+        if (!"ACTIVE".equals(authInfo.status())) {
+            throw new BusinessException(ErrorCode.USER_BANNED);
+        }
 
         // 4. 生成 Token
-        Map<String, Object> tokenPair = jwtUtil.generateTokenPair(userId, role);
+        Map<String, Object> tokenPair = jwtUtil.generateTokenPair(authInfo.userId(), authInfo.role());
 
         // 5. 删除已使用的验证码
         String cacheKey = Constants.CACHE_VERIFY_CODE_PREFIX + "LOGIN:" + phone;
@@ -99,11 +114,11 @@ public class AuthServiceImpl implements AuthService {
         LoginResponse response = new LoginResponse();
 
         LoginResponse.UserInfo userInfo = new LoginResponse.UserInfo();
-        userInfo.setId(userId);
+        userInfo.setId(authInfo.userId());
         userInfo.setNickname("用户" + phone.substring(7));
-        userInfo.setRole(role);
-        userInfo.setStatus(status);
-        userInfo.setIsNewUser(isNewUser);
+        userInfo.setRole(authInfo.role());
+        userInfo.setStatus(authInfo.status());
+        userInfo.setIsNewUser(authInfo.isNewUser());
         response.setUser(userInfo);
 
         LoginResponse.TokenInfo tokenInfo = new LoginResponse.TokenInfo();
@@ -114,7 +129,8 @@ public class AuthServiceImpl implements AuthService {
         tokenInfo.setRefreshExpiresIn((Long) tokenPair.get("refresh_expires_in"));
         response.setTokens(tokenInfo);
 
-        log.info("[Login] 用户登录成功 userId={}, phone={}, isNewUser={}", userId, phone, isNewUser);
+        log.info("[Login] 用户登录成功 userId={}, phone={}, isNewUser={}",
+                authInfo.userId(), phone, authInfo.isNewUser());
         return response;
     }
 
@@ -247,15 +263,6 @@ public class AuthServiceImpl implements AuthService {
             return "123456";
         }
         return RandomUtil.randomNumbers(6);
-    }
-
-    /**
-     * 查找或创建用户 (临时 Mock，后续对接 UserService)
-     */
-    private Long getOrCreateUser(String phone, String ipAddress) {
-        // TODO: 对接 UserService 实现数据库操作
-        // 临时使用 phone 的 hashCode 作为 userId
-        return (long) Math.abs(phone.hashCode());
     }
 
     /**
