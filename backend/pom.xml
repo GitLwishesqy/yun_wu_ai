@@ -15,6 +15,7 @@
     <modules>
         <module>yunwu-common</module>
         <module>yunwu-auth</module>
+        <module>yunwu-user</module>
     </modules>
 
     <properties>
