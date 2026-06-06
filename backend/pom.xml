@@ -20,6 +20,7 @@
         <module>yunwu-coach</module>
         <module>yunwu-scene</module>
         <module>yunwu-correction</module>
+        <module>yunwu-evaluation</module>
     </modules>
 
     <properties>
