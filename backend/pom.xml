@@ -19,6 +19,7 @@
         <module>yunwu-sms</module>
         <module>yunwu-coach</module>
         <module>yunwu-scene</module>
+        <module>yunwu-correction</module>
     </modules>
 
     <properties>
