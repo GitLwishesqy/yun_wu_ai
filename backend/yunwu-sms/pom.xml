@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.yunwu</groupId>
+        <artifactId>yunwu-english</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>yunwu-sms</artifactId>
+    <name>YunWu English - SMS</name>
+    <description>短信服务模块 — 验证码发送、模板管理、发送日志、图形验证码、风控</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.yunwu</groupId>
+            <artifactId>yunwu-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- MyBatis-Plus (发送日志持久化) -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+        </dependency>
+
+        <!-- PostgreSQL -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+
+        <!-- Redis (频率限制 + 图形验证码) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
+        <!--
+            生产环境 SMS SDK (按需取消注释)
+            阿里云: 需添加 aliyun-sdk-oss 仓库或使用纯 HTTP 调用
+            腾讯云: Maven Central 可用
+        -->
+        <!--
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>dysmsapi20170525</artifactId>
+            <version>3.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.tencentcloudapi</groupId>
+            <artifactId>tencentcloud-sdk-java-sms</artifactId>
+            <version>3.1.1170</version>
+        </dependency>
+        -->
+
+        <!-- Hutool -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>

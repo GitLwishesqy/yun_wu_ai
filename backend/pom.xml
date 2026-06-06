@@ -16,6 +16,7 @@
         <module>yunwu-common</module>
         <module>yunwu-auth</module>
         <module>yunwu-user</module>
+        <module>yunwu-sms</module>
     </modules>
 
     <properties>
