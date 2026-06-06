@@ -14,6 +14,7 @@
     <!-- 子模块 -->
     <modules>
         <module>yunwu-common</module>
+        <module>yunwu-auth</module>
     </modules>
 
     <properties>
