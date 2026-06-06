@@ -1,16 +1,17 @@
 package com.yunwu.coach.service;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yunwu.coach.client.AiAgentClient;
 import com.yunwu.coach.dto.*;
 import com.yunwu.coach.entity.*;
 import com.yunwu.coach.mapper.*;
+import com.yunwu.coach.speech.AsrService;
+import com.yunwu.coach.speech.TtsService;
 import com.yunwu.common.context.UserContext;
 import com.yunwu.common.exception.BusinessException;
 import com.yunwu.common.exception.ErrorCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +20,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * 会话服务
+ * 会话服务 — 支持文本 + 语音消息
  */
 @Service
 public class SessionService {
@@ -30,15 +31,21 @@ public class SessionService {
     private final CoachMessageMapper messageMapper;
     private final CorrectionMapper correctionMapper;
     private final AiAgentClient aiAgentClient;
+    private final AsrService asrService;
+    private final TtsService ttsService;
 
     public SessionService(CoachSessionMapper sessionMapper,
                           CoachMessageMapper messageMapper,
                           CorrectionMapper correctionMapper,
-                          AiAgentClient aiAgentClient) {
+                          AiAgentClient aiAgentClient,
+                          @Autowired(required = false) AsrService asrService,
+                          @Autowired(required = false) TtsService ttsService) {
         this.sessionMapper = sessionMapper;
         this.messageMapper = messageMapper;
         this.correctionMapper = correctionMapper;
         this.aiAgentClient = aiAgentClient;
+        this.asrService = asrService;
+        this.ttsService = ttsService;
     }
 
     // ==================== 创建会话 ====================
@@ -68,7 +75,7 @@ public class SessionService {
         return toSessionResponse(session);
     }
 
-    // ==================== 发送消息 (核心) ====================
+    // ==================== 发送消息 (核心 — 文本 + 语音) ====================
 
     @Transactional
     public MessageResponse sendMessage(Long sessionId, SendMessageRequest request) {
@@ -79,12 +86,26 @@ public class SessionService {
         if (!session.getUserId().equals(userId)) throw new BusinessException(ErrorCode.SESSION_NOT_OWNER);
         if ("COMPLETED".equals(session.getStatus())) throw new BusinessException(ErrorCode.SESSION_ALREADY_ENDED);
 
-        // 1. 保存用户消息
         int seq = Optional.ofNullable(messageMapper.maxSequenceNum(sessionId)).orElse(0);
+        String userText = request.getContent();
+
+        // === 语音管道: ASR (语音→文本) ===
+        if ("AUDIO".equalsIgnoreCase(request.getContentType()) && asrService != null) {
+            String audioFormat = extractAudioFormat(request.getAudioUrl());
+            AsrService.AsrResult asrResult = asrService.transcribe(
+                    request.getAudioUrl(), audioFormat);
+            if (asrResult.text() != null && !asrResult.text().isEmpty()) {
+                userText = asrResult.text();
+                log.info("[Voice] ASR识别: {} (confidence={})",
+                        userText, asrResult.confidence());
+            }
+        }
+
+        // 1. 保存用户消息
         CoachMessage userMsg = new CoachMessage();
         userMsg.setSessionId(sessionId);
         userMsg.setRole("USER");
-        userMsg.setContent(request.getContent());
+        userMsg.setContent(userText);
         userMsg.setContentType(request.getContentType());
         userMsg.setAudioUrl(request.getAudioUrl());
         userMsg.setAudioDuration(request.getAudioDuration());
@@ -94,18 +115,38 @@ public class SessionService {
         messageMapper.insert(userMsg);
 
         // 2. 构建 AI 请求
-        AiAgentClient.AiAgentRequest aiRequest = buildAiRequest(
-                session, request.getContent());
+        AiAgentClient.AiAgentRequest aiRequest = buildAiRequest(session, userText);
 
         // 3. 调用 Python AI 智能体
         AiAgentClient.AiAgentResponse aiResponse = aiAgentClient.chat(aiRequest);
 
-        // 4. 保存 AI 回复
+        // 4. 保存 AI 回复 (文本)  +  TTS 语音合成
+        String aiText = aiResponse.getAiMessage();
+        String aiAudioUrl = null;
+        int aiAudioDuration = 0;
+
+        // === TTS 管道: AI文本→语音 ===
+        if (ttsService != null && aiText != null && !aiText.isEmpty()) {
+            try {
+                TtsService.TtsResult ttsResult = ttsService.synthesize(
+                        aiText, "FEMALE", 1.0);
+                if (ttsResult.audioUrl() != null && !ttsResult.audioUrl().isEmpty()) {
+                    aiAudioUrl = ttsResult.audioUrl();
+                    aiAudioDuration = ttsResult.durationMs();
+                    log.info("[Voice] TTS合成成功 duration={}ms", aiAudioDuration);
+                }
+            } catch (Exception e) {
+                log.warn("[Voice] TTS合成失败(降级为纯文本): {}", e.getMessage());
+            }
+        }
+
         CoachMessage aiMsg = new CoachMessage();
         aiMsg.setSessionId(sessionId);
         aiMsg.setRole("AI");
-        aiMsg.setContent(aiResponse.getAiMessage());
-        aiMsg.setContentType("TEXT");
+        aiMsg.setContent(aiText);
+        aiMsg.setContentType(aiAudioUrl != null ? "MIXED" : "TEXT");
+        aiMsg.setAudioUrl(aiAudioUrl);
+        aiMsg.setAudioDuration(aiAudioDuration);
         aiMsg.setModelName(aiResponse.getModelName());
         aiMsg.setPromptTokens(aiResponse.getPromptTokens());
         aiMsg.setCompletionTokens(aiResponse.getCompletionTokens());
@@ -232,6 +273,16 @@ public class SessionService {
         resp.setStartedAt(s.getStartedAt());
         resp.setEndedAt(s.getEndedAt());
         return resp;
+    }
+
+    /** 从 URL 提取音频格式 */
+    private String extractAudioFormat(String audioUrl) {
+        if (audioUrl == null) return "mp3";
+        String lower = audioUrl.toLowerCase();
+        if (lower.contains(".wav")) return "wav";
+        if (lower.contains(".pcm")) return "pcm";
+        if (lower.contains(".ogg")) return "ogg";
+        return "mp3";
     }
 
     private MessageResponse toMessageResponse(CoachMessage msg, CoachMessage userMsg) {

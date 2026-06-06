@@ -37,6 +37,7 @@ from agent.llm_service import get_llm, build_messages, extract_token_usage, invo
 from agent.prompt_templates import build_system_prompt
 from agent.correction_engine import detect_errors
 from agent.intent_analyzer import analyze_intent
+from agent.pronunciation_evaluator import evaluate_pronunciation
 from utils.logger import logger
 
 
@@ -153,14 +154,16 @@ def build_coach_graph() -> StateGraph:
     workflow.add_node("analyze_intent", analyze_intent)
     workflow.add_node("generate_response", generate_response)
     workflow.add_node("detect_errors", detect_errors)
+    workflow.add_node("evaluate_pronunciation", evaluate_pronunciation)
 
     # 入口
     workflow.set_entry_point("analyze_intent")
 
-    # 线性流程: intent → generate → detect → END
+    # 流程: intent → generate → detect → pronunciation → END
     workflow.add_edge("analyze_intent", "generate_response")
     workflow.add_edge("generate_response", "detect_errors")
-    workflow.add_edge("detect_errors", END)
+    workflow.add_edge("detect_errors", "evaluate_pronunciation")
+    workflow.add_edge("evaluate_pronunciation", END)
 
     # 编译 (带检查点持久化)
     checkpointer = _build_checkpointer()

@@ -53,7 +53,7 @@ def _build_llm(temperature: float, max_tokens: int) -> ChatOpenAI:
         "timeout": config.LLM_TIMEOUT,
         "request_timeout": config.LLM_TIMEOUT,
     }
-
+    # TODO:需要接入真实的路径以及key，目前先使用默认的openai路径
     if config.LLM_PROVIDER == "deepseek":
         kwargs["base_url"] = config.LLM_BASE_URL or "https://api.deepseek.com/v1"
     elif config.LLM_PROVIDER == "qwen":
