@@ -1,0 +1,16 @@
+com\yunwu\user\dto\ProfileResponse.class
+com\yunwu\user\dto\ProfileResponse$LevelHistoryItem.class
+com\yunwu\user\entity\User.class
+com\yunwu\user\entity\LearnerProfile.class
+com\yunwu\user\service\impl\UserAuthServiceImpl.class
+com\yunwu\user\service\impl\UserServiceImpl.class
+com\yunwu\user\dto\ProfileUpdateRequest.class
+com\yunwu\user\dto\UserUpdateRequest.class
+com\yunwu\user\controller\UserController.class
+com\yunwu\user\service\UserService.class
+com\yunwu\user\config\UserAutoConfiguration.class
+com\yunwu\user\config\MyBatisPlusConfig.class
+com\yunwu\user\dto\UserInfoResponse.class
+com\yunwu\user\config\MyBatisPlusConfig$1.class
+com\yunwu\user\mapper\LearnerProfileMapper.class
+com\yunwu\user\mapper\UserMapper.class

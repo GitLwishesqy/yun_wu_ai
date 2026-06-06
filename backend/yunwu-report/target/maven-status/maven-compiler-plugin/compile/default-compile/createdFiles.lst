@@ -1,0 +1,16 @@
+com\yunwu\report\dto\ReportDTO.class
+com\yunwu\report\config\ReportAutoConfiguration$1.class
+com\yunwu\report\mapper\LearningReportMapper.class
+com\yunwu\report\entity\LearningReport.class
+com\yunwu\report\dto\ReportDTO$ListItem.class
+com\yunwu\report\dto\ReportDTO$StatsInfo.class
+com\yunwu\report\dto\ReportDTO$SceneItem.class
+com\yunwu\report\controller\ReportController.class
+com\yunwu\report\dto\ReportDTO$DimensionChange.class
+com\yunwu\report\dto\ReportDTO$Detail.class
+com\yunwu\report\dto\ReportDTO$ReportData.class
+com\yunwu\report\config\ReportAutoConfiguration.class
+com\yunwu\report\service\ReportService.class
+com\yunwu\report\dto\ReportDTO$DayBreakdown.class
+com\yunwu\report\dto\ReportDTO$ErrorItem.class
+com\yunwu\report\service\ReportService$Period.class

@@ -1,0 +1,14 @@
+com\yunwu\vocabulary\config\VocabAutoConfiguration.class
+com\yunwu\vocabulary\dto\VocabularyDTO$MyWord.class
+com\yunwu\vocabulary\entity\UserVocabulary.class
+com\yunwu\vocabulary\mapper\VocabularyLibraryMapper.class
+com\yunwu\vocabulary\mapper\UserVocabularyMapper.class
+com\yunwu\vocabulary\dto\VocabularyDTO$MyVocabList.class
+com\yunwu\vocabulary\entity\VocabularyLibrary.class
+com\yunwu\vocabulary\service\VocabularyService.class
+com\yunwu\vocabulary\dto\VocabularyDTO.class
+com\yunwu\vocabulary\dto\VocabularyDTO$Pagination.class
+com\yunwu\vocabulary\controller\VocabularyController.class
+com\yunwu\vocabulary\dto\VocabularyDTO$StatusUpdate.class
+com\yunwu\vocabulary\config\VocabAutoConfiguration$1.class
+com\yunwu\vocabulary\dto\VocabularyDTO$LibraryWord.class

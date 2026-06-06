@@ -1,0 +1,12 @@
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-class\src\main\java\com\yunwu\clazz\config\ClassAutoConfiguration.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-class\src\main\java\com\yunwu\clazz\controller\ClassController.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-class\src\main\java\com\yunwu\clazz\dto\ClassDTO.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-class\src\main\java\com\yunwu\clazz\entity\AssignmentSubmission.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-class\src\main\java\com\yunwu\clazz\entity\ClassAssignment.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-class\src\main\java\com\yunwu\clazz\entity\ClassEntity.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-class\src\main\java\com\yunwu\clazz\entity\ClassRoster.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-class\src\main\java\com\yunwu\clazz\mapper\AssignmentSubmissionMapper.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-class\src\main\java\com\yunwu\clazz\mapper\ClassAssignmentMapper.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-class\src\main\java\com\yunwu\clazz\mapper\ClassMapper.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-class\src\main\java\com\yunwu\clazz\mapper\ClassRosterMapper.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-class\src\main\java\com\yunwu\clazz\service\ClassService.java

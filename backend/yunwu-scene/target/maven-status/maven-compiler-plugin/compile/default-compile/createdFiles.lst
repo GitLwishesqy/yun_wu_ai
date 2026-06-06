@@ -1,0 +1,11 @@
+com\yunwu\scene\config\SceneAutoConfiguration$1.class
+com\yunwu\scene\dto\SceneDTO$CreateRequest.class
+com\yunwu\scene\entity\SceneTemplate.class
+com\yunwu\scene\mapper\SceneTemplateMapper.class
+com\yunwu\scene\dto\SceneDTO$Response.class
+com\yunwu\scene\dto\SceneDTO$ListItem.class
+com\yunwu\scene\dto\SceneDTO$UpdateRequest.class
+com\yunwu\scene\service\SceneService.class
+com\yunwu\scene\config\SceneAutoConfiguration.class
+com\yunwu\scene\dto\SceneDTO.class
+com\yunwu\scene\controller\SceneController.class

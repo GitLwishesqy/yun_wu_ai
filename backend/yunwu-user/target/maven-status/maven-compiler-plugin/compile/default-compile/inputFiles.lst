@@ -1,0 +1,14 @@
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-user\src\main\java\com\yunwu\user\config\MyBatisPlusConfig.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-user\src\main\java\com\yunwu\user\config\UserAutoConfiguration.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-user\src\main\java\com\yunwu\user\controller\UserController.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-user\src\main\java\com\yunwu\user\dto\ProfileResponse.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-user\src\main\java\com\yunwu\user\dto\ProfileUpdateRequest.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-user\src\main\java\com\yunwu\user\dto\UserInfoResponse.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-user\src\main\java\com\yunwu\user\dto\UserUpdateRequest.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-user\src\main\java\com\yunwu\user\entity\LearnerProfile.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-user\src\main\java\com\yunwu\user\entity\User.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-user\src\main\java\com\yunwu\user\mapper\LearnerProfileMapper.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-user\src\main\java\com\yunwu\user\mapper\UserMapper.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-user\src\main\java\com\yunwu\user\service\impl\UserAuthServiceImpl.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-user\src\main\java\com\yunwu\user\service\impl\UserServiceImpl.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-user\src\main\java\com\yunwu\user\service\UserService.java

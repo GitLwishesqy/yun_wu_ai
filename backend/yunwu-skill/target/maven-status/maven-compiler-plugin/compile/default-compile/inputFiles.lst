@@ -1,0 +1,10 @@
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-skill\src\main\java\com\yunwu\skill\config\SkillAutoConfiguration.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-skill\src\main\java\com\yunwu\skill\controller\SkillController.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-skill\src\main\java\com\yunwu\skill\dto\SkillDTO.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-skill\src\main\java\com\yunwu\skill\entity\ContentAsset.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-skill\src\main\java\com\yunwu\skill\entity\ReadingPassage.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-skill\src\main\java\com\yunwu\skill\entity\WritingPrompt.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-skill\src\main\java\com\yunwu\skill\mapper\ContentAssetMapper.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-skill\src\main\java\com\yunwu\skill\mapper\ReadingPassageMapper.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-skill\src\main\java\com\yunwu\skill\mapper\WritingPromptMapper.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-skill\src\main\java\com\yunwu\skill\service\SkillService.java

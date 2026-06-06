@@ -1,0 +1,6 @@
+com\yunwu\notification\controller\NotificationController.class
+com\yunwu\notification\service\NotificationService.class
+com\yunwu\notification\config\NotifAutoConfiguration.class
+com\yunwu\notification\entity\Notification.class
+com\yunwu\notification\mapper\NotificationMapper.class
+com\yunwu\notification\config\NotifAutoConfiguration$1.class

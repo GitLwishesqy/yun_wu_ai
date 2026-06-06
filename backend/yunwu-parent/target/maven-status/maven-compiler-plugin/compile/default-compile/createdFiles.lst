@@ -1,0 +1,13 @@
+com\yunwu\parent\dto\ParentDTO$TodayStats.class
+com\yunwu\parent\dto\ParentDTO.class
+com\yunwu\parent\service\ParentService.class
+com\yunwu\parent\dto\ParentDTO$WeeklyStats.class
+com\yunwu\parent\entity\ParentStudentBinding.class
+com\yunwu\parent\dto\ParentDTO$SettingsUpdate.class
+com\yunwu\parent\dto\ParentDTO$BindRequest.class
+com\yunwu\parent\controller\ParentController.class
+com\yunwu\parent\config\ParentAutoConfiguration.class
+com\yunwu\parent\config\ParentAutoConfiguration$1.class
+com\yunwu\parent\dto\ParentDTO$RecentSession.class
+com\yunwu\parent\dto\ParentDTO$StudentOverview.class
+com\yunwu\parent\mapper\BindingMapper.class

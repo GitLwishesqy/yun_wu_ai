@@ -1,0 +1,8 @@
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-correction\src\main\java\com\yunwu\correction\config\CorrectionAutoConfiguration.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-correction\src\main\java\com\yunwu\correction\controller\CorrectionController.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-correction\src\main\java\com\yunwu\correction\dto\CorrectionDTO.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-correction\src\main\java\com\yunwu\correction\entity\Correction.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-correction\src\main\java\com\yunwu\correction\entity\ErrorRecord.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-correction\src\main\java\com\yunwu\correction\mapper\CorrectionMapper.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-correction\src\main\java\com\yunwu\correction\mapper\ErrorRecordMapper.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-correction\src\main\java\com\yunwu\correction\service\CorrectionService.java
