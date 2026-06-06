@@ -17,6 +17,7 @@
         <module>yunwu-auth</module>
         <module>yunwu-user</module>
         <module>yunwu-sms</module>
+        <module>yunwu-coach</module>
     </modules>
 
     <properties>
