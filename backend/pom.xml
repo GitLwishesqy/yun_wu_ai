@@ -21,6 +21,7 @@
         <module>yunwu-scene</module>
         <module>yunwu-correction</module>
         <module>yunwu-evaluation</module>
+        <module>yunwu-report</module>
     </modules>
 
     <properties>
