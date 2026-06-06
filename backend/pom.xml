@@ -25,6 +25,8 @@
         <module>yunwu-vocabulary</module>
         <module>yunwu-incentive</module>
         <module>yunwu-skill</module>
+        <module>yunwu-parent</module>
+        <module>yunwu-class</module>
     </modules>
 
     <properties>
