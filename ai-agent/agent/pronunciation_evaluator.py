@@ -49,9 +49,7 @@ def evaluate_pronunciation(state: dict) -> dict:
     """
     user_message = state.get("user_message", "")
     learner_profile = state.get("learner_profile", {})
-    cefr_level = "A1"
-    if isinstance(learner_profile, dict):
-        cefr_level = learner_profile.get("cefr_level", "A1")
+    cefr_level = (learner_profile or {}).get("cefr_level", "A1") if isinstance(learner_profile, dict) else "A1"
 
     # 太短的输入跳过
     words = user_message.strip().split()
@@ -66,7 +64,7 @@ def evaluate_pronunciation(state: dict) -> dict:
         )
 
         messages = [
-            SystemMessage(content="你是专业的英语发音教练。只返回 JSON 数组。"),
+            SystemMessage(content="你是专业的英语发音教练。你必须只返回一个有效的 JSON 数组，不能有任何其他内容。没有发现发音问题返回 []。"),
             HumanMessage(content=prompt)
         ]
 
