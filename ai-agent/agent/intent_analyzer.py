@@ -27,9 +27,7 @@ def analyze_intent(state: dict) -> dict:
         return {"intent": "chat"}
 
     learner_profile = state.get("learner_profile", {})
-    cefr_level = "A1"
-    if isinstance(learner_profile, dict):
-        cefr_level = learner_profile.get("cefr_level", "A1")
+    cefr_level = (learner_profile or {}).get("cefr_level", "A1") if isinstance(learner_profile, dict) else "A1"
 
     try:
         llm = get_llm(temperature=0.0, max_tokens=64)

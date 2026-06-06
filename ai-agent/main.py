@@ -19,6 +19,7 @@ from agent.coach_graph import coach_graph
 from middleware.tracing import TracingMiddleware
 from middleware.rate_limiter import RateLimiterMiddleware
 from utils.logger import logger
+from utils.sanitizer import sanitize_history, sanitize_user_message
 
 
 # ==================== 应用生命周期 ====================
@@ -86,13 +87,17 @@ async def chat(request: ChatRequest):
         raise HTTPException(status_code=400, detail="消息内容过长 (最大2000字符)")
 
     try:
+        # 入口脱敏: 清洗用户消息 + 历史记录
+        safe_message = sanitize_user_message(request.user_message)
+        safe_history = sanitize_history(request.conversation_history or [])
+
         initial_state = CoachState(
             session_id=request.session_id,
             user_id=request.user_id,
-            user_message=request.user_message,
+            user_message=safe_message,
             scene=request.scene,
             learner_profile=request.learner_profile,
-            conversation_history=request.conversation_history or []
+            conversation_history=safe_history
         )
 
         config_dict = {

@@ -45,5 +45,21 @@ def setup_logger(name: str = "yunwu-ai") -> logging.Logger:
     return logger
 
 
+class SensitiveDataFilter(logging.Filter):
+    """过滤日志中的敏感字段"""
+    SENSITIVE_KEYS = {"api_key", "access_key", "secret", "password",
+                      "token", "credential", "authorization"}
+
+    def filter(self, record):
+        if hasattr(record, "extra") and isinstance(record.extra, dict):
+            for key in list(record.extra.keys()):
+                key_lower = key.lower()
+                if any(sk in key_lower for sk in self.SENSITIVE_KEYS):
+                    record.extra[key] = "***REDACTED***"
+        return True
+
+
 # 全局 logger
 logger = setup_logger()
+logger.addFilter(SensitiveDataFilter())
+
