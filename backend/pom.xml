@@ -27,6 +27,8 @@
         <module>yunwu-skill</module>
         <module>yunwu-parent</module>
         <module>yunwu-class</module>
+        <module>yunwu-notification</module>
+        <module>yunwu-plan</module>
     </modules>
 
     <properties>
