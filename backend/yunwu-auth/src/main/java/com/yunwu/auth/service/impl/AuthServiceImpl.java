@@ -69,6 +69,7 @@ public class AuthServiceImpl implements AuthService {
                 Constants.VERIFY_CODE_EXPIRE_SECONDS, TimeUnit.SECONDS);
 
         // 4. 发送短信 (TODO: 接入阿里云/腾讯云短信服务)
+        // 生产：smsService.sendTemplate(phone, templateCode, Map.of("code", code, "minutes", "5"), purpose, ipAddress);
         log.info("[SMS] 验证码已发送 phone={}, purpose={}, code={}", phone, purpose,
                 devMode ? code : "******");
 
