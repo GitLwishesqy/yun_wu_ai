@@ -8,6 +8,7 @@ import SceneSelector from '../components/coach/SceneSelector';
 import VoiceRecorder from '../components/coach/VoiceRecorder';
 import VoiceRecorderV2 from '../components/coach/VoiceRecorderV2';
 import InputModeToggle, { type InputMode } from '../components/coach/InputModeToggle';
+import PhoneCallVoice from '../components/coach/PhoneCallVoice';
 import Badge from '../components/ui/Badge';
 import Button from '../components/ui/Button';
 
@@ -61,11 +62,25 @@ export default function Coach() {
     setShowScenePicker(true);
   };
 
-  // 语音录制回调
+  // 语音录制回调 (V2)
   const handleVoiceRecorded = (blob: Blob) => {
-    // TODO: 上传到 OSS → 调 ASR → 填入 input
     console.log('录音完成:', blob.size, 'bytes');
   };
+
+  // 实时语音识别回调 (PhoneCallVoice)
+  const handleTranscribed = (text: string) => {
+    if (!text.trim() || isTyping || sessionEnded) return;
+    sendMessage(text.trim());
+  };
+
+  // AI 回复自动朗读
+  const lastAiMsg = messages.filter(m => m.role === 'AI').pop();
+  useEffect(() => {
+    if (lastAiMsg && inputMode === 'voice') {
+      const speak = (window as any).__phoneCallSpeak;
+      if (speak) speak(lastAiMsg.content);
+    }
+  }, [lastAiMsg?.id]);
 
   // 首次进入 — 显示场景选择
   if (showScenePicker) {
@@ -158,10 +173,13 @@ export default function Coach() {
       <div className="sticky bottom-0 bg-white/80 backdrop-blur-md border-t border-gray-200 px-4 py-3 safe-area-bottom">
         <div className="flex items-center gap-2 max-w-3xl mx-auto">
           {inputMode === 'voice' ? (
-            /* 语音模式: 大录音按钮居中 */
-            <div className="flex-1 flex items-center justify-center gap-3">
-              <VoiceRecorderV2 onRecorded={handleVoiceRecorded} disabled={isTyping} />
-              {isTyping && <span className="text-sm text-gray-400">AI 回复中...</span>}
+            /* 语音模式: 通话式实时识别 + AI语音回复 */
+            <div className="w-full">
+              <PhoneCallVoice
+                onTranscribed={handleTranscribed}
+                onSpeak={(text) => {/* 由 useEffect 自动触发 */}}
+                disabled={isTyping}
+              />
             </div>
           ) : (
             /* 打字模式: 输入框 + 发送 */
