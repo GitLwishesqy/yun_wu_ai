@@ -4,6 +4,8 @@ import AdminShell from './components/layout/AdminShell';
 import Home from './pages/Home';
 import Coach from './pages/Coach';
 import Scenes from './pages/Scenes';
+import ScenesReal from './pages/ScenesReal';
+import CoachDirect from './pages/CoachDirect';
 import Report from './pages/Report';
 import Achievements from './pages/Achievements';
 import Profile from './pages/Profile';
@@ -21,8 +23,8 @@ export const router = createBrowserRouter([
     element: <StudentShell />,
     children: [
       { path: '/coach', element: <Coach /> },
-      { path: '/coach/:sceneId', element: <Coach /> },
-      { path: '/scenes', element: <Scenes /> },
+      { path: '/coach/:sceneId', element: <CoachDirect /> },
+      { path: '/scenes', element: <ScenesReal /> },
       { path: '/report', element: <Report /> },
       { path: '/achievements', element: <Achievements /> },
       { path: '/me', element: <Profile /> },
