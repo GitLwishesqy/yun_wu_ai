@@ -1,0 +1,53 @@
+server:
+  port: 2667
+
+spring:
+  application:
+    name: yunwu-english
+  datasource:
+    url: jdbc:postgresql://localhost:5432/yunwu_english?options=-c%20timezone=UTC
+    username: postgres
+    password: 123456
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      data-source-properties:
+        connectionTimeZone: UTC
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    default-property-inclusion: non_null
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deletedAt
+      logic-delete-value: "NOW()"
+      logic-not-delete-value: "NULL"
+
+yunwu:
+  auth:
+    jwt-secret: yunwu-english-secret-key-for-jwt-token-2026-must-be-at-least-256-bits-long!!
+    access-token-expire: 7200
+    refresh-token-expire: 2592000
+    dev-mode: true
+  ai-agent:
+    url: http://localhost:2668
+  oss:
+    upload-dir: ./upload
+    base-url: http://localhost:2667/upload
+
+logging:
+  level:
+    com.yunwu: DEBUG
+    org.springframework.security: INFO

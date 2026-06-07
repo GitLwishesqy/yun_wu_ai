@@ -1,0 +1,30 @@
+# 云悟英语 — Python AI 智能体微服务
+# Python 3.11+
+
+# Web 框架
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+pydantic==2.10.3
+
+# HTTP 客户端 (调用 LLM API)
+httpx==0.28.1
+
+# LLM 框架
+langchain==0.3.13
+langchain-openai==0.2.14
+langgraph==0.2.60
+langgraph-checkpoint==2.0.10
+
+# 向量数据库 (pgvector — PostgreSQL 原生向量扩展)
+pgvector==0.3.6
+psycopg2-binary==2.9.10
+sqlalchemy==2.0.36
+
+# Redis (限流 + 状态持久化)
+redis==5.2.1
+hiredis==2.4.0
+
+# 工具
+python-dotenv==1.0.1
+tenacity==9.0.0              # LLM 调用重试
+python-json-logger==3.2.1    # 结构化 JSON 日志

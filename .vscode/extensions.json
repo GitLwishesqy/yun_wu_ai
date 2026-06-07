@@ -1,0 +1,13 @@
+{
+    "recommendations": [
+        "Gruntfuggly.todo-tree",
+        "vscjava.vscode-java-pack",
+        "vmware.vscode-boot-dev-pack",
+        "redhat.vscode-xml",
+        "redhat.vscode-yaml",
+        "formulahendry.auto-rename-tag",
+        "streetsidesoftware.code-spell-checker",
+        "eamodio.gitlens",
+        "bierner.markdown-mermaid"
+    ]
+}

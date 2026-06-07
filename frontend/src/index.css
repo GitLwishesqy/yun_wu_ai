@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+/* ==================== 云悟英语 — Spring Sprout 设计系统 ==================== */
+
+@theme {
+  --color-primary-50:  #F0FAF4;   --color-primary-100: #D4EDDA;
+  --color-primary-200: #B9DFC6;   --color-primary-300: #A8D8BA;
+  --color-primary-400: #8DCDA8;   --color-primary-500: #7EC8A0;
+  --color-primary-600: #6BB88E;   --color-primary-700: #5BA87A;
+  --color-primary-800: #4A9468;   --color-primary-900: #3A7D55;
+  --color-warm-300:  #FFD4A8;   --color-warm-500:  #F0A858;
+  --color-sky-300:   #A8D8EA;    --color-sky-500:   #68B8D8;
+  --color-blossom:   #F5D5E0;    --color-success:   #6BBF7A;
+  --color-warning:   #F5C26B;    --color-error:     #E8837A;
+  --color-gray-50:   #FAFBFA;    --color-gray-100:  #F2F5F3;
+  --color-gray-200:  #E8EDE9;    --color-gray-300:  #D0D8D2;
+  --color-gray-400:  #A8B2AB;    --color-gray-500:  #7D8A80;
+  --color-gray-600:  #5A6860;    --color-gray-700:  #3D4A42;
+  --color-gray-800:  #222E27;
+  --font-sans: 'Inter', 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif;
+  --radius-sm: 6px; --radius-md: 10px; --radius-lg: 16px; --radius-xl: 24px; --radius-full: 9999px;
+  --shadow-sm: 0 1px 3px rgba(34,46,39,0.06);
+  --shadow-md: 0 4px 12px rgba(34,46,39,0.08);
+  --shadow-lg: 0 8px 24px rgba(34,46,39,0.10);
+  --shadow-glow: 0 0 0 3px rgba(126,200,160,0.3);
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-gray-50);
+  color: var(--color-gray-600);
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+}
+
+#root { min-height: 100dvh; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--color-gray-100); }
+::-webkit-scrollbar-thumb { background: var(--color-primary-300); border-radius: 9999px; }
+
+@keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0; } }
+@keyframes bubble-in { from { opacity:0; transform:translateY(8px) scale(0.97); } to { opacity:1; transform:translateY(0) scale(1); } }
+@keyframes achieve-pop { 0%{transform:scale(0)} 60%{transform:scale(1.15)} 100%{transform:scale(1)} }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+
+.animate-bubble-in { animation: bubble-in 0.3s cubic-bezier(0.4,0,0.2,1); }
+.animate-achieve { animation: achieve-pop 0.6s cubic-bezier(0.34,1.56,0.64,1); }
+.animate-float { animation: float 3s ease-in-out infinite; }

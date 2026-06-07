@@ -1,0 +1,42 @@
+# Maven
+target/
+*.jar
+*.war
+!.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.project
+.classpath
+.settings/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Environment
+.env
+.env.local
+application-local.yml
+application-local.properties
+
+# Upload files
+upload/
+
+# Dev scripts (optional, uncomment if you want to track them)
+# start.bat
+# start.sh
+# test-api.bat
+
+# Temp test files
+*.json.tmp
+
