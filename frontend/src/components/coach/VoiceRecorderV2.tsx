@@ -3,10 +3,7 @@ import { Mic, Square } from 'lucide-react';
 
 const MAX_SECONDS = 60;
 
-interface Props {
-  onRecorded: (blob: Blob) => void;
-  disabled?: boolean;
-}
+interface Props { onRecorded: (blob: Blob) => void; disabled?: boolean; }
 
 export default function VoiceRecorderV2({ onRecorded, disabled }: Props) {
   const [recording, setRecording] = useState(false);
@@ -19,32 +16,19 @@ export default function VoiceRecorderV2({ onRecorded, disabled }: Props) {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mr = new MediaRecorder(stream, { mimeType: 'audio/webm' });
       const chunks: Blob[] = [];
-
       mr.ondataavailable = e => chunks.push(e.data);
       mr.onstop = () => {
         onRecorded(new Blob(chunks, { type: 'audio/webm' }));
         stream.getTracks().forEach(t => t.stop());
       };
-
       mr.start();
       mediaRecorder.current = mr;
       setRecording(true);
       setDuration(0);
-
-      // 每秒计时，60秒自动停止
       timerRef.current = window.setInterval(() => {
-        setDuration(prev => {
-          const next = prev + 1;
-          if (next >= MAX_SECONDS) {
-            mr.stop();
-            setRecording(false);
-          }
-          return next;
-        });
+        setDuration(prev => { if (prev >= MAX_SECONDS - 1) { mr.stop(); setRecording(false); } return prev + 1; });
       }, 1000);
-    } catch (e) {
-      console.warn('麦克风不可用:', e);
-    }
+    } catch (e) { console.warn('麦克风不可用:', e); }
   }, [onRecorded]);
 
   const stop = useCallback(() => {
@@ -58,19 +42,12 @@ export default function VoiceRecorderV2({ onRecorded, disabled }: Props) {
       {recording && (
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-error animate-pulse" />
-          <span className="text-sm text-error font-mono tabular-nums">
-            {String(Math.floor(duration / 60)).padStart(2, '0')}:{String(duration % 60).padStart(2, '0')}
-          </span>
+          <span className="text-sm text-error font-mono">{String(Math.floor(duration/60)).padStart(2,'0')}:{String(duration%60).padStart(2,'0')}</span>
           <span className="text-xs text-gray-400">/ 01:00</span>
         </div>
       )}
-      <button
-        onClick={recording ? stop : start}
-        disabled={disabled}
-        className={`p-2.5 rounded-full transition-all shrink-0
-          ${recording
-            ? 'bg-error text-white animate-pulse shadow-lg shadow-error/30'
-            : 'bg-primary-100 text-primary-600 hover:bg-primary-200 disabled:opacity-40'}`}>
+      <button onClick={recording ? stop : start} disabled={disabled}
+        className={`p-2.5 rounded-full transition-all shrink-0 ${recording ? 'bg-error text-white animate-pulse shadow-lg shadow-error/30' : 'bg-primary-100 text-primary-600 hover:bg-primary-200 disabled:opacity-40'}`}>
         {recording ? <Square size={18} /> : <Mic size={20} />}
       </button>
     </div>

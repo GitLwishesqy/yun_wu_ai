@@ -27,9 +27,9 @@ export default function Coach() {
   useEffect(() => {
     if (sceneId) {
       sceneApi.detail(Number(sceneId)).then(s => {
-        setScene(s);
-        startSession(s.id);
-      }).catch(() => setError('场景加载失败'));
+        if (!s?.id) { setError('场景不存在'); setShowScenePicker(true); return; }
+        setScene(s); return startSession(s.id);
+      }).then(r => { if (r === null) { setError('创建会话失败'); } }).catch(() => { setError('加载失败'); setShowScenePicker(true); });
     } else {
       setShowScenePicker(true);
     }
@@ -62,25 +62,10 @@ export default function Coach() {
     setShowScenePicker(true);
   };
 
-  // 语音录制回调 (V2)
-  const handleVoiceRecorded = (blob: Blob) => {
-    console.log('录音完成:', blob.size, 'bytes');
-  };
-
-  // 实时语音识别回调 (PhoneCallVoice)
-  const handleTranscribed = (text: string) => {
-    if (!text.trim() || isTyping || sessionEnded) return;
-    sendMessage(text.trim());
-  };
-
-  // AI 回复自动朗读
+  const handleVoiceRecorded = (blob: Blob) => { console.log('录音完成:', blob.size, 'bytes'); };
+  const handleTranscribed = (text: string) => { if (!text.trim() || isTyping || sessionEnded) return; sendMessage(text.trim()); };
   const lastAiMsg = messages.filter(m => m.role === 'AI').pop();
-  useEffect(() => {
-    if (lastAiMsg && inputMode === 'voice') {
-      const speak = (window as any).__phoneCallSpeak;
-      if (speak) speak(lastAiMsg.content);
-    }
-  }, [lastAiMsg?.id]);
+  useEffect(() => { if (lastAiMsg && inputMode === 'voice') { const s = (window as any).__phoneCallSpeak; if (s) s(lastAiMsg.content); } }, [lastAiMsg?.id]);
 
   // 首次进入 — 显示场景选择
   if (showScenePicker) {
@@ -173,35 +158,16 @@ export default function Coach() {
       <div className="sticky bottom-0 bg-white/80 backdrop-blur-md border-t border-gray-200 px-4 py-3 safe-area-bottom">
         <div className="flex items-center gap-2 max-w-3xl mx-auto">
           {inputMode === 'voice' ? (
-            /* 语音模式: 通话式实时识别 + AI语音回复 */
-            <div className="w-full">
-              <PhoneCallVoice
-                onTranscribed={handleTranscribed}
-                onSpeak={(text) => {/* 由 useEffect 自动触发 */}}
-                disabled={isTyping}
-              />
-            </div>
+            <div className="w-full"><PhoneCallVoice onTranscribed={handleTranscribed} onSpeak={() => {}} disabled={isTyping} /></div>
           ) : (
-            /* 打字模式: 输入框 + 发送 */
             <>
+              <div className="hidden sm:block"><VoiceRecorder onRecorded={handleVoiceRecorded} disabled={isTyping} /></div>
               <div className="flex-1 relative">
-                <input
-                  value={input} onChange={e => setInput(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleSend()}
-                  placeholder={isTyping ? 'AI 正在回复...' : '输入英语...'}
-                  disabled={isTyping}
-                  className="w-full px-4 py-2.5 pr-10 rounded-full border border-gray-300 bg-gray-50 text-sm
-                    focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 focus:bg-white
-                    disabled:bg-gray-100 disabled:text-gray-400 transition-all"
-                />
+                <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleSend()} placeholder={isTyping ? 'AI 回复中...' : '输入英语...'} disabled={isTyping} className="w-full px-4 py-2.5 rounded-full border border-gray-300 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-primary-300 disabled:bg-gray-100 transition-all" />
               </div>
-              <button onClick={handleSend} disabled={!input.trim() || isTyping}
-                className="p-2.5 rounded-full bg-primary-500 text-white hover:bg-primary-600 disabled:opacity-40 transition-all shrink-0 shadow-md">
-                <Send size={18} />
-              </button>
+              <button onClick={handleSend} disabled={!input.trim() || isTyping} className="p-2.5 rounded-full bg-primary-500 text-white hover:bg-primary-600 disabled:opacity-40 shadow-md shrink-0"><Send size={18} /></button>
             </>
           )}
-          {/* 模式切换 */}
           <InputModeToggle mode={inputMode} onChange={setInputMode} />
         </div>
       </div>
