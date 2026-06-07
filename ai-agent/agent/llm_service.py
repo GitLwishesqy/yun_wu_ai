@@ -51,6 +51,8 @@ def _build_llm(temperature: float, max_tokens: int) -> ChatOpenAI:
         kwargs["base_url"] = config.LLM_BASE_URL or "https://api.deepseek.com/v1"
     elif config.LLM_PROVIDER == "qwen":
         kwargs["base_url"] = config.LLM_BASE_URL or "https://dashscope.aliyuncs.com/compatible-mode/v1"
+    elif config.LLM_PROVIDER == "zhipu":
+        kwargs["base_url"] = config.LLM_BASE_URL or "https://open.bigmodel.cn/api/paas/v4/"
     elif config.LLM_BASE_URL:
         kwargs["base_url"] = config.LLM_BASE_URL
 
@@ -70,11 +72,7 @@ def _build_llm(temperature: float, max_tokens: int) -> ChatOpenAI:
         max=config.LLM_RETRY_MAX_WAIT,
     ),
     retry=retry_if_exception_type((
-        ConnectionError, TimeoutError,
-        __import__('requests').exceptions.Timeout,
-        __import__('requests').exceptions.ConnectionError,
-        __import__('urllib3.exceptions').TimeoutError,
-        __import__('urllib3.exceptions').ProtocolError,
+        ConnectionError, TimeoutError, Exception,
     )),
     before_sleep=before_sleep_log(logger, __import__('logging').WARNING),
     reraise=True,

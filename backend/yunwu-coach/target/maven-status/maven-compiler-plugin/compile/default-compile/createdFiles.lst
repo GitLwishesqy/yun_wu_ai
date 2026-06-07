@@ -14,7 +14,6 @@ com\yunwu\coach\entity\Correction.class
 com\yunwu\coach\speech\TtsService$TtsResult.class
 com\yunwu\coach\speech\AsrService.class
 com\yunwu\coach\controller\SessionController.class
-com\yunwu\coach\mapper\CorrectionMapper.class
 com\yunwu\coach\service\SessionService.class
 com\yunwu\coach\client\AiAgentClient$AiAgentResponse.class
 com\yunwu\coach\speech\OssService.class
@@ -23,6 +22,7 @@ com\yunwu\coach\client\AiAgentClient$AiAgentRequest$HistoryMessage.class
 com\yunwu\coach\dto\SendMessageRequest.class
 com\yunwu\coach\dto\SessionResponse.class
 com\yunwu\coach\dto\CreateSessionRequest.class
+com\yunwu\coach\mapper\CoachCorrectionMapper.class
 com\yunwu\coach\client\AiAgentClient$AiAgentRequest$LearnerContext.class
 com\yunwu\coach\client\AiAgentClient$AiAgentRequest$SceneContext.class
 com\yunwu\coach\client\AiAgentClient$AiAgentResponse$CorrectionItem.class

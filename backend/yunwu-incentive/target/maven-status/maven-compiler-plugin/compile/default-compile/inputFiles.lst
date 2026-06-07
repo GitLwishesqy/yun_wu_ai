@@ -5,6 +5,7 @@ D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-incentive\src\main\java\com\yu
 D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-incentive\src\main\java\com\yunwu\incentive\entity\CheckIn.java
 D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-incentive\src\main\java\com\yunwu\incentive\entity\PointsRecord.java
 D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-incentive\src\main\java\com\yunwu\incentive\entity\UserAchievement.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-incentive\src\main\java\com\yunwu\incentive\mapper\AchievementMapper.java
 D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-incentive\src\main\java\com\yunwu\incentive\mapper\CheckInMapper.java
 D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-incentive\src\main\java\com\yunwu\incentive\mapper\PointsRecordMapper.java
 D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-incentive\src\main\java\com\yunwu\incentive\mapper\UserAchievementMapper.java

@@ -127,11 +127,15 @@ async def chat(request: ChatRequest):
     except HTTPException:
         raise
     except Exception as e:
+        import traceback, sys
         logger.error("chat_failed", extra={
             "session_id": request.session_id,
             "error": str(e),
             "error_type": type(e).__name__
         })
+        print("=== FULL TRACEBACK ===", file=sys.stderr)
+        traceback.print_exc(file=sys.stderr)
+        print("=== END TRACEBACK ===", file=sys.stderr)
         raise HTTPException(
             status_code=500,
             detail=f"AI 服务暂时不可用，请稍后重试"

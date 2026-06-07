@@ -8,9 +8,9 @@ D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-coach\src\main\java\com\yunwu\
 D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-coach\src\main\java\com\yunwu\coach\entity\CoachMessage.java
 D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-coach\src\main\java\com\yunwu\coach\entity\CoachSession.java
 D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-coach\src\main\java\com\yunwu\coach\entity\Correction.java
+D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-coach\src\main\java\com\yunwu\coach\mapper\CoachCorrectionMapper.java
 D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-coach\src\main\java\com\yunwu\coach\mapper\CoachMessageMapper.java
 D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-coach\src\main\java\com\yunwu\coach\mapper\CoachSessionMapper.java
-D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-coach\src\main\java\com\yunwu\coach\mapper\CorrectionMapper.java
 D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-coach\src\main\java\com\yunwu\coach\service\SessionService.java
 D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-coach\src\main\java\com\yunwu\coach\speech\AsrService.java
 D:\Java_project\yun_wu_ai\yun_wu_ai\backend\yunwu-coach\src\main\java\com\yunwu\coach\speech\impl\AliyunAsrServiceImpl.java

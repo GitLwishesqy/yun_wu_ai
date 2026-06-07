@@ -4,7 +4,10 @@
 import config
 from langgraph.graph import StateGraph, END
 from langgraph.checkpoint.memory import MemorySaver
-from langgraph.checkpoint.redis import RedisSaver
+try:
+    from langgraph.checkpoint.redis import RedisSaver
+except ImportError:
+    RedisSaver = None
 
 from models.schemas import CoachState, ChatResponse
 from agent.llm_service import (
@@ -17,31 +20,21 @@ from agent.intent_analyzer import analyze_intent
 from agent.pronunciation_evaluator import evaluate_pronunciation
 from utils.logger import logger
 from utils.sanitizer import sanitize_history, sanitize_user_message
-
-
-# ==================== 辅助: 安全提取 ====================
-
-def _safe_get(obj, key, default=None):
-    """安全提取 — 统一处理 dict 和 object 两种类型"""
-    if obj is None:
-        return default
-    if isinstance(obj, dict):
-        return obj.get(key, default)
-    return getattr(obj, key, default) if hasattr(obj, key) else default
+from utils.state_helper import _get
 
 
 def _extract_scene(scene) -> tuple:
     """统一提取场景信息 (消除 dict/object 双重分支冗余)"""
     return (
-        _safe_get(scene, "name", "自由对话"),
-        _safe_get(scene, "name_en", "Free Talk"),
-        int(_safe_get(scene, "difficulty", 1) or 1),
-        (_safe_get(scene, "roles", []) or [{}])[0].get("name", "英语陪练")
-            if isinstance(_safe_get(scene, "roles", []), list)
-            and len(_safe_get(scene, "roles", [])) > 0
+        _get(scene, "name", "自由对话"),
+        _get(scene, "name_en", "Free Talk"),
+        int(_get(scene, "difficulty", 1) or 1),
+        (_get(scene, "roles", []) or [{}])[0].get("name", "英语陪练")
+            if isinstance(_get(scene, "roles", []), list)
+            and len(_get(scene, "roles", [])) > 0
             else "英语陪练",
-        _safe_get(scene, "keywords", []),
-        _safe_get(scene, "target_sentences", []),
+        _get(scene, "keywords", []),
+        _get(scene, "target_sentences", []),
     )
 
 
@@ -50,9 +43,9 @@ def _extract_scene(scene) -> tuple:
 def generate_response(state: CoachState) -> dict:
     """构建 System Prompt → 调用 LLM → 返回回复"""
     lp = state.learner_profile or {}
-    grade_level = _safe_get(lp, "grade_level", "ELEMENTARY")
-    cefr_level = _safe_get(lp, "cefr_level", "A1")
-    weaknesses = str(_safe_get(lp, "weaknesses", "{}"))
+    grade_level = _get(lp, "grade_level", "ELEMENTARY")
+    cefr_level = _get(lp, "cefr_level", "A1")
+    weaknesses = str(_get(lp, "weaknesses", "{}"))
 
     (scene_name, scene_name_en, difficulty,
      ai_role, keywords, target_sentences) = _extract_scene(state.scene)

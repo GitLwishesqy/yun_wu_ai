@@ -7,6 +7,7 @@ com\yunwu\incentive\service\IncentiveService.class
 com\yunwu\incentive\config\IncentiveAutoConfiguration.class
 com\yunwu\incentive\entity\CheckIn.class
 com\yunwu\incentive\dto\IncentiveDTO$Leaderboard.class
+com\yunwu\incentive\mapper\AchievementMapper.class
 com\yunwu\incentive\mapper\PointsRecordMapper.class
 com\yunwu\incentive\dto\IncentiveDTO$AchievementItem.class
 com\yunwu\incentive\dto\IncentiveDTO$PointsRecordItem.class

@@ -47,9 +47,10 @@ def evaluate_pronunciation(state: dict) -> dict:
     发音评测 — LangGraph 节点
     与 detect_errors 互补，专注发音维度
     """
-    user_message = state.get("user_message", "")
-    learner_profile = state.get("learner_profile", {})
-    cefr_level = (learner_profile or {}).get("cefr_level", "A1") if isinstance(learner_profile, dict) else "A1"
+    from utils.state_helper import _get
+    user_message = _get(state, "user_message", "")
+    lp = _get(state, "learner_profile", {})
+    cefr_level = (lp or {}).get("cefr_level", "A1") if isinstance(lp, dict) else "A1"
 
     # 太短的输入跳过
     words = user_message.strip().split()
