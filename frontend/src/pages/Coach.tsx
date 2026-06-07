@@ -6,6 +6,8 @@ import { sceneApi, type SceneData } from '../lib/api';
 import MessageBubble from '../components/coach/MessageBubble';
 import SceneSelector from '../components/coach/SceneSelector';
 import VoiceRecorder from '../components/coach/VoiceRecorder';
+import VoiceRecorderV2 from '../components/coach/VoiceRecorderV2';
+import InputModeToggle, { type InputMode } from '../components/coach/InputModeToggle';
 import Badge from '../components/ui/Badge';
 import Button from '../components/ui/Button';
 
@@ -17,6 +19,7 @@ export default function Coach() {
   const [scene, setScene] = useState<SceneData | null>(null);
   const [showScenePicker, setShowScenePicker] = useState(false);
   const [sessionEnded, setSessionEnded] = useState(false);
+  const [inputMode, setInputMode] = useState<InputMode>('text');
   const bottomRef = useRef<HTMLDivElement>(null);
 
   // 初始化场景
@@ -154,29 +157,34 @@ export default function Coach() {
       {/* 输入区 */}
       <div className="sticky bottom-0 bg-white/80 backdrop-blur-md border-t border-gray-200 px-4 py-3 safe-area-bottom">
         <div className="flex items-center gap-2 max-w-3xl mx-auto">
-          {/* 语音录制 (仅桌面端) */}
-          <div className="hidden sm:block">
-            <VoiceRecorder onRecorded={handleVoiceRecorded} disabled={isTyping} />
-          </div>
-          <div className="flex-1 relative">
-            <input
-              value={input} onChange={e => setInput(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleSend()}
-              placeholder={isTyping ? 'AI 正在回复...' : '输入英语...'}
-              disabled={isTyping}
-              className="w-full px-4 py-2.5 pr-10 rounded-full border border-gray-300 bg-gray-50 text-sm
-                focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 focus:bg-white
-                disabled:bg-gray-100 disabled:text-gray-400 transition-all"
-            />
-            {/* 移动端语音按钮 */}
-            <button className="sm:hidden absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-primary-100 text-primary-600">
-              <Phone size={16} />
-            </button>
-          </div>
-          <button onClick={handleSend} disabled={!input.trim() || isTyping}
-            className="p-2.5 rounded-full bg-primary-500 text-white hover:bg-primary-600 disabled:opacity-40 disabled:hover:bg-primary-500 transition-all shrink-0 shadow-md">
-            <Send size={18} />
-          </button>
+          {inputMode === 'voice' ? (
+            /* 语音模式: 大录音按钮居中 */
+            <div className="flex-1 flex items-center justify-center gap-3">
+              <VoiceRecorderV2 onRecorded={handleVoiceRecorded} disabled={isTyping} />
+              {isTyping && <span className="text-sm text-gray-400">AI 回复中...</span>}
+            </div>
+          ) : (
+            /* 打字模式: 输入框 + 发送 */
+            <>
+              <div className="flex-1 relative">
+                <input
+                  value={input} onChange={e => setInput(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleSend()}
+                  placeholder={isTyping ? 'AI 正在回复...' : '输入英语...'}
+                  disabled={isTyping}
+                  className="w-full px-4 py-2.5 pr-10 rounded-full border border-gray-300 bg-gray-50 text-sm
+                    focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 focus:bg-white
+                    disabled:bg-gray-100 disabled:text-gray-400 transition-all"
+                />
+              </div>
+              <button onClick={handleSend} disabled={!input.trim() || isTyping}
+                className="p-2.5 rounded-full bg-primary-500 text-white hover:bg-primary-600 disabled:opacity-40 transition-all shrink-0 shadow-md">
+                <Send size={18} />
+              </button>
+            </>
+          )}
+          {/* 模式切换 */}
+          <InputModeToggle mode={inputMode} onChange={setInputMode} />
         </div>
       </div>
 
