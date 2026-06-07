@@ -1,0 +1,2 @@
+INSERT INTO scene_templates (name, name_en, description, category, grade_level, difficulty, cefr_level, roles, keywords, target_sentences, opening_dialogue, is_published)
+VALUES ('自由对话', 'Free Talk', '自由的英语对话练习，不限话题，不限轮次', 'SOCIAL', NULL, 0, 'A1', '[{"name":"云小悟","name_en":"YunXiaoWu"}]', '[]', '[]', '{"ai_first":"Hi! I am YunXiaoWu, your English practice partner. What would you like to talk about today?"}', true);

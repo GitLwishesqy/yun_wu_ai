@@ -17,8 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -168,34 +167,42 @@ public class SceneService {
 
     private SceneDTO.Response toResponse(SceneTemplate s) {
         SceneDTO.Response r = new SceneDTO.Response();
-        BeanUtil.copyProperties(s, r);
-        try {
-            @SuppressWarnings("unchecked")
-            List<Map<String, String>> roles =
-                    (List<Map<String, String>>) (List<?>) JSONUtil.toList(s.getRoles(), Map.class);
-            @SuppressWarnings("unchecked")
-            List<Map<String, String>> keywords =
-                    (List<Map<String, String>>) (List<?>) JSONUtil.toList(s.getKeywords(), Map.class);
-            @SuppressWarnings("unchecked")
-            List<Map<String, String>> ts =
-                    (List<Map<String, String>>) (List<?>) JSONUtil.toList(s.getTargetSentences(), Map.class);
-            @SuppressWarnings("unchecked")
-            Map<String, String> opening =
-                    (Map<String, String>) (Map<?, ?>) JSONUtil.toBean(s.getOpeningDialogue(), Map.class);
-
-            r.setRoles(roles);
-            r.setKeywords(keywords);
-            r.setTargetSentences(ts);
-            r.setOpeningDialogue(opening);
-            r.setTags(JSONUtil.toList(s.getTags(), String.class));
-        } catch (Exception ignored) {}
+        // Manually copy compatible fields (skip JSON String fields to avoid type mismatch)
+        r.setId(s.getId()); r.setName(s.getName()); r.setNameEn(s.getNameEn());
+        r.setDescription(s.getDescription()); r.setCategory(s.getCategory());
+        r.setGradeLevel(s.getGradeLevel()); r.setDifficulty(s.getDifficulty());
+        r.setCefrLevel(s.getCefrLevel()); r.setMaxRounds(s.getMaxRounds());
+        r.setEstimatedDuration(s.getEstimatedDuration()); r.setIsPublished(s.getIsPublished());
+        r.setVersion(s.getVersion()); r.setCreatedBy(s.getCreatedBy());
+        r.setCreatedAt(s.getCreatedAt()); r.setUpdatedAt(s.getUpdatedAt());
+        // Parse JSON fields
+        r.setRoles(safeJsonList(s.getRoles()));
+        r.setKeywords(safeJsonList(s.getKeywords()));
+        r.setTargetSentences(safeJsonList(s.getTargetSentences()));
+        r.setOpeningDialogue(safeJsonMap(s.getOpeningDialogue()));
+        r.setTags(safeJsonStrList(s.getTags()));
         return r;
+    }
+    @SuppressWarnings("unchecked")
+    private List<Map<String, String>> safeJsonList(String json) {
+        try { return (List<Map<String, String>>)(List<?>)JSONUtil.toList(json, Map.class); } catch (Exception e) { return new ArrayList<>(); }
+    }
+    @SuppressWarnings("unchecked")
+    private Map<String, String> safeJsonMap(String json) {
+        try { return (Map<String, String>)(Map<?,?>)JSONUtil.toBean(json, Map.class); } catch (Exception e) { return new HashMap<>(); }
+    }
+    private List<String> safeJsonStrList(String json) {
+        try { return JSONUtil.toList(json, String.class); } catch (Exception e) { return new ArrayList<>(); }
     }
 
     private SceneDTO.ListItem toListItem(SceneTemplate s) {
         SceneDTO.ListItem r = new SceneDTO.ListItem();
-        BeanUtil.copyProperties(s, r);
-        try { r.setTags(JSONUtil.toList(s.getTags(), String.class)); } catch (Exception ignored) {}
+        r.setId(s.getId()); r.setName(s.getName()); r.setNameEn(s.getNameEn());
+        r.setCategory(s.getCategory()); r.setGradeLevel(s.getGradeLevel());
+        r.setDifficulty(s.getDifficulty()); r.setCefrLevel(s.getCefrLevel());
+        r.setEstimatedDuration(s.getEstimatedDuration()); r.setIsPublished(s.getIsPublished());
+        r.setVersion(s.getVersion());
+        r.setTags(safeJsonStrList(s.getTags()));
         return r;
     }
 }

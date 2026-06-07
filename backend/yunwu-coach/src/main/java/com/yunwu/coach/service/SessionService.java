@@ -245,10 +245,29 @@ public class SessionService {
         req.setUserId(session.getUserId());
         req.setUserMessage(userMessage);
 
-        // 对话历史 — skip for now (partition table TIMESTAMPTZ compat)
-        req.setConversationHistory(new ArrayList<>());
+        // 对话历史
+        try {
+            List<CoachMessage> history = messageMapper.selectBySessionId(session.getId());
+            List<AiAgentClient.AiAgentRequest.HistoryMessage> histMsgs = new ArrayList<>();
+            for (CoachMessage m : history) {
+                histMsgs.add(new AiAgentClient.AiAgentRequest.HistoryMessage(m.getRole(), m.getContent()));
+            }
+            if (histMsgs.size() > 40) histMsgs = histMsgs.subList(histMsgs.size() - 40, histMsgs.size());
+            req.setConversationHistory(histMsgs);
+        } catch (Exception e) {
+            req.setConversationHistory(new ArrayList<>());
+        }
 
-        // TODO: 从数据库加载场景信息和学习者档案
+        // 场景上下文 (注入 Prompt)
+        if (session.getSceneId() != null) {
+            try {
+                AiAgentClient.AiAgentRequest.SceneContext sc = new AiAgentClient.AiAgentRequest.SceneContext();
+                sc.setId(session.getSceneId());
+                // TODO: 从 SceneService 加载场景详情填充 keywords, roles, targetSentences
+                req.setScene(sc);
+            } catch (Exception ignored) {}
+        }
+
         return req;
     }
 

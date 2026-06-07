@@ -23,7 +23,10 @@ export default function VoiceRecorder({ onRecorded, disabled }: Props) {
       mediaRecorder.current = mr;
       setRecording(true);
       setDuration(0);
-      timer.current = window.setInterval(() => setDuration(d => d + 1), 1000);
+      // 60s auto-stop
+      timer.current = window.setInterval(() => {
+        setDuration(d => { if (d >= 59) { mr.stop(); setRecording(false); } return d + 1; });
+      }, 1000);
     } catch (e) {
       console.warn('麦克风不可用:', e);
     }

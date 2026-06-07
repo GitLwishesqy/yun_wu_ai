@@ -4,19 +4,33 @@ import { Sprout, Mic, Sparkles, TrendingUp } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Logo from '../components/ui/Logo';
+import { authApi, setToken } from '../lib/api';
 
 export default function Home() {
   const [phone, setPhone] = useState('');
   const [code, setCode] = useState('');
   const [step, setStep] = useState<'phone' | 'code'>('phone');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleSendCode = () => {
-    if (phone.length === 11) setStep('code');
+  const handleSendCode = async () => {
+    if (phone.length < 11) return;
+    setLoading(true); setError('');
+    try { await authApi.sendCode(phone); setStep('code'); }
+    catch (e: any) { setError(e.message); }
+    finally { setLoading(false); }
   };
 
-  const handleLogin = () => {
-    navigate('/coach');
+  const handleLogin = async () => {
+    if (code.length < 4) return;
+    setLoading(true); setError('');
+    try {
+      const res = await authApi.login(phone, code);
+      setToken(res.tokens.accessToken);
+      navigate('/coach');
+    } catch (e: any) { setError(e.message); }
+    finally { setLoading(false); }
   };
 
   return (
@@ -66,6 +80,7 @@ export default function Home() {
             <Logo size="md" />
           </div>
 
+          {error && <div className="text-sm text-error bg-error/10 px-3 py-2 rounded-lg mb-4">{error}</div>}
           {step === 'phone' ? (
             <>
               <h3 className="text-2xl font-bold text-gray-800 mb-2">欢迎回来</h3>
@@ -73,7 +88,7 @@ export default function Home() {
               <Input
                 type="tel" placeholder="输入手机号" maxLength={11}
                 value={phone} onChange={e => setPhone(e.target.value)} />
-              <Button className="w-full mt-4" size="lg" onClick={handleSendCode} disabled={phone.length < 11}>
+              <Button className="w-full mt-4" size="lg" onClick={handleSendCode} disabled={phone.length < 11} loading={loading}>
                 获取验证码
               </Button>
             </>
@@ -84,7 +99,7 @@ export default function Home() {
               <Input
                 type="text" placeholder="6位验证码" maxLength={6}
                 value={code} onChange={e => setCode(e.target.value)} />
-              <Button className="w-full mt-4" size="lg" onClick={handleLogin} disabled={code.length < 4}>
+              <Button className="w-full mt-4" size="lg" onClick={handleLogin} disabled={code.length < 4} loading={loading}>
                 开始体验
               </Button>
               <button onClick={() => setStep('phone')} className="w-full mt-3 text-sm text-primary-600 hover:underline">

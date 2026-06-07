@@ -22,10 +22,12 @@ export default function Coach() {
   // 初始化场景
   useEffect(() => {
     if (sceneId) {
+      setError(null);
       sceneApi.detail(Number(sceneId)).then(s => {
+        if (!s || !s.id) { setError('场景不存在'); setShowScenePicker(true); return; }
         setScene(s);
-        startSession(s.id);
-      }).catch(() => setError('场景加载失败'));
+        return startSession(s.id);
+      }).catch(() => { setError('场景加载失败'); setShowScenePicker(true); });
     } else {
       setShowScenePicker(true);
     }
@@ -39,7 +41,13 @@ export default function Coach() {
     setShowScenePicker(false);
     setScene(s);
     setSessionEnded(false);
-    await startSession(s.id);
+    setError(null);
+    const result = await startSession(s.id);
+    if (!result) {
+      setError('创建会话失败，请重试');
+      setShowScenePicker(true);
+      return;
+    }
     navigate(`/coach/${s.id}`, { replace: true });
   };
 
