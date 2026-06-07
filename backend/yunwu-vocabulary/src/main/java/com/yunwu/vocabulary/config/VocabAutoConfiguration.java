@@ -8,9 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import java.time.LocalDateTime;
 
-@AutoConfiguration
-@ComponentScan(basePackages = "com.yunwu.vocabulary")
-@MapperScan("com.yunwu.vocabulary.mapper")
+@AutoConfiguration @MapperScan("com.yunwu.vocabulary.mapper")
 public class VocabAutoConfiguration {
     @Bean
     public MetaObjectHandler vocabMetaObjectHandler() {

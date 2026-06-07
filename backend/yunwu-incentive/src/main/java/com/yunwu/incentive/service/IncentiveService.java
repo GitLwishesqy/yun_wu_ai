@@ -25,13 +25,13 @@ public class IncentiveService {
     private final CheckInMapper checkInMapper;
     private final PointsRecordMapper pointsMapper;
     private final UserAchievementMapper uaMapper;
-    private final com.baomidou.mybatisplus.core.mapper.BaseMapper<Achievement> achievementMapper;
+    private final AchievementMapper achievementMapper;
 
     private static final int POINTS_PER_CHECKIN = 5;
 
     public IncentiveService(CheckInMapper checkInMapper, PointsRecordMapper pointsMapper,
                             UserAchievementMapper uaMapper,
-                            com.baomidou.mybatisplus.core.mapper.BaseMapper<Achievement> achievementMapper) {
+                            AchievementMapper achievementMapper) {
         this.checkInMapper = checkInMapper; this.pointsMapper = pointsMapper;
         this.uaMapper = uaMapper; this.achievementMapper = achievementMapper;
     }

@@ -10,8 +10,6 @@ import org.springframework.context.annotation.ComponentScan;
  * @author YunWu Team
  * @since 1.0.0
  */
-@AutoConfiguration
-@ComponentScan(basePackages = "com.yunwu.sms")
-@MapperScan("com.yunwu.sms.mapper")
+@AutoConfiguration @MapperScan("com.yunwu.sms.mapper")
 public class SmsAutoConfiguration {
 }

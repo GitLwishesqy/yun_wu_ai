@@ -32,3 +32,11 @@ application-local.properties
 # Upload files
 upload/
 
+# Dev scripts (optional, uncomment if you want to track them)
+# start.bat
+# start.sh
+# test-api.bat
+
+# Temp test files
+*.json.tmp
+

@@ -4,7 +4,7 @@ import org.apache.ibatis.reflection.MetaObject; import org.mybatis.spring.annota
 import org.springframework.boot.autoconfigure.AutoConfiguration; import org.springframework.context.annotation.Bean; import org.springframework.context.annotation.ComponentScan;
 import java.time.LocalDateTime;
 
-@AutoConfiguration @ComponentScan("com.yunwu.notification") @MapperScan("com.yunwu.notification.mapper")
+@AutoConfiguration @MapperScan("com.yunwu.notification.mapper")
 public class NotifAutoConfiguration {
     @Bean public MetaObjectHandler notifMetaHandler() {
         return new MetaObjectHandler() {

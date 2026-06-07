@@ -49,7 +49,9 @@ public class SceneService {
 
         q.orderByAsc(SceneTemplate::getDifficulty);
 
-        IPage<SceneTemplate> result = mapper.selectPage(new Page<>(page, size), q);
+        List<SceneTemplate> records = mapper.selectList(q.last("LIMIT " + size + " OFFSET " + ((page - 1) * size)));
+        IPage<SceneTemplate> result = new Page<>(page, size, mapper.selectCount(q));
+        result.setRecords(records);
         return result.convert(this::toListItem);
     }
 
@@ -77,7 +79,9 @@ public class SceneService {
                         .or().like(SceneTemplate::getDescription, keyword));
         q.orderByDesc(SceneTemplate::getCreatedAt);
 
-        IPage<SceneTemplate> result = mapper.selectPage(new Page<>(page, size), q);
+        List<SceneTemplate> records = mapper.selectList(q.last("LIMIT " + size + " OFFSET " + ((page - 1) * size)));
+        IPage<SceneTemplate> result = new Page<>(page, size, mapper.selectCount(q));
+        result.setRecords(records);
         return result.convert(this::toListItem);
     }
 

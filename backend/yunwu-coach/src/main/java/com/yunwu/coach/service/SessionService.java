@@ -29,14 +29,14 @@ public class SessionService {
 
     private final CoachSessionMapper sessionMapper;
     private final CoachMessageMapper messageMapper;
-    private final CorrectionMapper correctionMapper;
+    private final CoachCorrectionMapper correctionMapper;
     private final AiAgentClient aiAgentClient;
     private final AsrService asrService;
     private final TtsService ttsService;
 
     public SessionService(CoachSessionMapper sessionMapper,
                           CoachMessageMapper messageMapper,
-                          CorrectionMapper correctionMapper,
+                          CoachCorrectionMapper correctionMapper,
                           AiAgentClient aiAgentClient,
                           @Autowired(required = false) AsrService asrService,
                           @Autowired(required = false) TtsService ttsService) {

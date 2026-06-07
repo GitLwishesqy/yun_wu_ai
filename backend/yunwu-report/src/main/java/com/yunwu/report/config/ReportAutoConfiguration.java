@@ -8,9 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import java.time.LocalDateTime;
 
-@AutoConfiguration
-@ComponentScan(basePackages = "com.yunwu.report")
-@MapperScan("com.yunwu.report.mapper")
+@AutoConfiguration @MapperScan("com.yunwu.report.mapper")
 public class ReportAutoConfiguration {
     @Bean
     public MetaObjectHandler reportMetaObjectHandler() {

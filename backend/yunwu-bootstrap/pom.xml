@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent><groupId>com.yunwu</groupId><artifactId>yunwu-english</artifactId><version>1.0.0-SNAPSHOT</version></parent>
+    <artifactId>yunwu-bootstrap</artifactId><name>YunWu English - Bootstrap</name>
+    <description>启动模块 — Spring Boot 入口 + 配置</description>
+    <dependencies>
+        <dependency><groupId>com.yunwu</groupId><artifactId>yunwu-common</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>com.yunwu</groupId><artifactId>yunwu-auth</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>com.yunwu</groupId><artifactId>yunwu-user</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>com.yunwu</groupId><artifactId>yunwu-coach</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>com.yunwu</groupId><artifactId>yunwu-scene</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>com.yunwu</groupId><artifactId>yunwu-correction</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>com.yunwu</groupId><artifactId>yunwu-evaluation</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>com.yunwu</groupId><artifactId>yunwu-report</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>com.yunwu</groupId><artifactId>yunwu-vocabulary</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>com.yunwu</groupId><artifactId>yunwu-incentive</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>com.yunwu</groupId><artifactId>yunwu-skill</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>com.yunwu</groupId><artifactId>yunwu-parent</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>com.yunwu</groupId><artifactId>yunwu-class</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>com.yunwu</groupId><artifactId>yunwu-notification</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>com.yunwu</groupId><artifactId>yunwu-plan</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-web</artifactId></dependency>
+        <dependency><groupId>org.postgresql</groupId><artifactId>postgresql</artifactId></dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.yunwu.YunWuApplication</mainClass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals><goal>repackage</goal></goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

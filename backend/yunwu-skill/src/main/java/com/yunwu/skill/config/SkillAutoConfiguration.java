@@ -8,9 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import java.time.LocalDateTime;
 
-@AutoConfiguration
-@ComponentScan(basePackages = "com.yunwu.skill")
-@MapperScan("com.yunwu.skill.mapper")
+@AutoConfiguration @MapperScan("com.yunwu.skill.mapper")
 public class SkillAutoConfiguration {
     @Bean
     public MetaObjectHandler skillMetaObjectHandler() {

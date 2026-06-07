@@ -8,9 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import java.time.LocalDateTime;
 
-@AutoConfiguration
-@ComponentScan(basePackages = "com.yunwu.incentive")
-@MapperScan("com.yunwu.incentive.mapper")
+@AutoConfiguration @MapperScan("com.yunwu.incentive.mapper")
 public class IncentiveAutoConfiguration {
     @Bean
     public MetaObjectHandler incentiveMetaObjectHandler() {

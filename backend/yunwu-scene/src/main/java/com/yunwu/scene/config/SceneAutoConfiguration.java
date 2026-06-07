@@ -9,9 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 import java.time.LocalDateTime;
 
-@AutoConfiguration
-@ComponentScan(basePackages = "com.yunwu.scene")
-@MapperScan("com.yunwu.scene.mapper")
+@AutoConfiguration @MapperScan("com.yunwu.scene.mapper")
 public class SceneAutoConfiguration {
 
     @Bean

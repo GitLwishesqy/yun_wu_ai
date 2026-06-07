@@ -4,22 +4,15 @@ import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 import java.time.LocalDateTime;
 
-/**
- * MyBatis-Plus 配置 — 自动填充
- *
- * @author YunWu Team
- * @since 1.0.0
- */
 @Configuration
 public class MyBatisPlusConfig {
 
-    /**
-     * 自动填充 — created_at / updated_at
-     */
     @Bean
+    @Primary
     public MetaObjectHandler metaObjectHandler() {
         return new MetaObjectHandler() {
             @Override

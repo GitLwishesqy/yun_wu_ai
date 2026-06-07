@@ -23,7 +23,7 @@ LLM_RETRY_BACKOFF = float(os.getenv("LLM_RETRY_BACKOFF", "2.0"))          # 指�
 
 # ==================== 服务配置 ====================
 HOST = os.getenv("HOST", "0.0.0.0")
-PORT = int(os.getenv("PORT", "8000"))
+PORT = int(os.getenv("PORT", "2668"))
 DEBUG = os.getenv("DEBUG", "false").lower() == "true"
 
 # ==================== 安全配置 ====================

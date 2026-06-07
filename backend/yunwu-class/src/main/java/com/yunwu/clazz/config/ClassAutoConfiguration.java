@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import java.time.LocalDateTime;
 
-@AutoConfiguration @ComponentScan(basePackages = "com.yunwu.clazz") @MapperScan("com.yunwu.clazz.mapper")
+@AutoConfiguration @MapperScan("com.yunwu.clazz.mapper")
 public class ClassAutoConfiguration {
     @Bean public MetaObjectHandler classMetaHandler() {
         return new MetaObjectHandler() {

@@ -149,7 +149,8 @@ public class UserServiceImpl implements UserService {
         profile.setUserId(userId);
         profile.setEstimatedVocabularySize(0);
         profile.setCefrLevel("A1");
-        profile.setWeaknesses("{}");
+        // JSONB columns: skip setting, let DB DEFAULT handle it
+        // profile.setWeaknesses("{}");
         profile.setTotalLearningDays(0);
         profile.setTotalSessionCount(0);
         profile.setTotalLearningMinutes(0);
@@ -157,7 +158,8 @@ public class UserServiceImpl implements UserService {
         profile.setAvgAccuracyRate(BigDecimal.ZERO);
         profile.setStreakDays(0);
         profile.setMaxStreakDays(0);
-        profile.setPreferredTopics("[]");
+        // JSONB column: skip, let DB DEFAULT handle it
+        // profile.setPreferredTopics("[]");
         profile.setLearningGoal("");
 
         profileMapper.insert(profile);

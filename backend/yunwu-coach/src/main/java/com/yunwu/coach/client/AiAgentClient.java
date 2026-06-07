@@ -32,7 +32,7 @@ public class AiAgentClient {
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
     // TODO:需要修改端口号
-    @Value("${yunwu.ai-agent.url:http://localhost:8000}")
+    @Value("${yunwu.ai-agent.url:http://localhost:2668}")
     private String agentBaseUrl;
 
     public AiAgentClient(ObjectMapper objectMapper) {

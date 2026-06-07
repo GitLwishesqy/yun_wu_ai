@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Select;
 import java.util.List;
 
 @Mapper
-public interface CorrectionMapper extends BaseMapper<Correction> {
+public interface CoachCorrectionMapper extends BaseMapper<Correction> {
 
     @Select("SELECT * FROM corrections WHERE session_id = #{sessionId} ORDER BY created_at ASC")
     List<Correction> selectBySessionId(@Param("sessionId") Long sessionId);

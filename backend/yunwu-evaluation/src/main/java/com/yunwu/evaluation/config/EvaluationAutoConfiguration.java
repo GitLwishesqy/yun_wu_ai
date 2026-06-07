@@ -9,9 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 import java.time.LocalDateTime;
 
-@AutoConfiguration
-@ComponentScan(basePackages = "com.yunwu.evaluation")
-@MapperScan("com.yunwu.evaluation.mapper")
+@AutoConfiguration @MapperScan("com.yunwu.evaluation.mapper")
 public class EvaluationAutoConfiguration {
     @Bean
     public MetaObjectHandler evalMetaObjectHandler() {

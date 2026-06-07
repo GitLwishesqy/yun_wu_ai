@@ -4,7 +4,7 @@ import org.apache.ibatis.reflection.MetaObject; import org.mybatis.spring.annota
 import org.springframework.boot.autoconfigure.AutoConfiguration; import org.springframework.context.annotation.Bean; import org.springframework.context.annotation.ComponentScan;
 import java.time.LocalDateTime;
 
-@AutoConfiguration @ComponentScan("com.yunwu.plan") @MapperScan("com.yunwu.plan.mapper")
+@AutoConfiguration @MapperScan("com.yunwu.plan.mapper")
 public class PlanAutoConfiguration {
     @Bean public MetaObjectHandler planMetaHandler() {
         return new MetaObjectHandler() {
