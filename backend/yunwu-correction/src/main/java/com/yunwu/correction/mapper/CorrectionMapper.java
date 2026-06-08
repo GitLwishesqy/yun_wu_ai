@@ -16,7 +16,7 @@ public interface CorrectionMapper extends BaseMapper<Correction> {
 
     /** 用户纠错历史 (分页) */
     @Select("SELECT * FROM corrections WHERE user_id = #{userId} " +
-            "AND (#{errorType} IS NULL OR error_type = #{errorType}) " +
+            "AND (#{errorType, jdbcType=VARCHAR} IS NULL OR error_type = #{errorType, jdbcType=VARCHAR}) " +
             "ORDER BY created_at DESC LIMIT #{limit} OFFSET #{offset}")
     List<Correction> selectByUserId(@Param("userId") Long userId,
                                      @Param("errorType") String errorType,
